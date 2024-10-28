@@ -27,3 +27,28 @@ Map.addLayer(dataset, visualization, '3DEP elevation 1m');
 Map.addLayer(featureCollection, {}, "Loaded Feature Collection");
 // Center the map on the FeatureCollection
 Map.centerObject(featureCollection, 10);
+
+
+/// Sample the elevation at the points (from 3DEP dem)
+var sampledElev = dataset.select('elevation').mean().sample({
+  region: featureCollection,
+  scale: 1
+});
+print(featureCollection);
+print('elevation: ', sampledElev);
+// Extract elevation values from the sampled points
+var elevList = sampledElev.aggregate_array('elevation');
+
+// Print the elevation list
+print('Elevation List:', elevList);
+
+// Sample x,y coords at the points
+//var sampledCoords = featureCollection.coordinates();
+
+var coordinates = featureCollection.map(function(feature) {
+  var coords = feature.geometry().coordinates();
+  return ee.Feature(null, {coordinates: coords});
+});
+// Print Long Lat values of each point
+print('x,y coords of GCPs', coordinates);
+
